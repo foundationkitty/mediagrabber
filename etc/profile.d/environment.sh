@@ -1,0 +1,16 @@
+export PUID=
+export PGID=
+export DOMAIN=
+export APPDATA=
+export CF_EMAIL=
+export CF_KEY=
+export NAMESERVER_1=
+export NAMESERVER_2=
+export ACME_EMAIL=
+export OAUTH_CLIENT_ID=
+export OAUTH_CLIENT_SECRET=
+export OAUTH_WHITELIST=
+export MNT_HDD=
+export TORRENT_PORT=
+export MINECRAFTBED_PORT=
+export PLEX_CLAIM=
