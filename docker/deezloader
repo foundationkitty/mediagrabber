@@ -1,0 +1,29 @@
+version: "3"
+services:
+    deezloader:
+      image: 	bocki/deezloaderrmx:latest
+      container_name: deezloader
+      environment:
+        PUID: "${PUID}"
+        PGID: "${PGID}"
+      volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - "${APPDATA}/deezloader:/config"
+        - "${MNT_HDD}:${MNT_HDD}"
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.deezloader.rule: "Host(`deezloader.${DOMAIN}`)"
+        traefik.http.routers.deezloader.entrypoints: "web"
+        traefik.http.routers.deezloader.middlewares: "redirect@file"
+        traefik.http.routers.deezloader-secured.rule: "Host(`deezloader.${DOMAIN}`)"
+        traefik.http.routers.deezloader-secured.entrypoints: "websecure"
+        traefik.http.routers.deezloader-secured.tls: "true"
+        traefik.http.routers.deezloader-secured.tls.options: "securetls@file"
+        traefik.http.routers.deezloader-secured.tls.certresolver: "le"
+        traefik.http.routers.deezloader-secured.middlewares: "secureHeaders@file,googleAuth@file"
+        traefik.http.services.deezloader-secured.loadbalancer.server.port: "1730"
+      restart: always
+networks:
+  default:
+    external:
+      name: web
