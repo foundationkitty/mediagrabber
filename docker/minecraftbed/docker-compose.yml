@@ -1,0 +1,18 @@
+version: "3"
+services:
+    minecraftbed:
+      image: 	bulzipke/minecraft:latest
+      container_name: minecraftbed
+      environment:
+        PUID: "${PUID}"
+        PGID: "${PGID}"
+      ports:
+        - "${MINECRAFTBED_PORT}:${MINECRAFTBED_PORT}"
+      volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - "${APPDATA}/minecraftbed:/data"
+      restart: always
+networks:
+  default:
+    external:
+      name: minecraftbed
