@@ -1,0 +1,48 @@
+version: "3"
+services:
+    jackett:
+      image: linuxserver/jackett:latest
+      container_name: jackett
+      environment:
+        PUID: "${PUID}"
+        PGID: "${PGID}"
+      volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - "${APPDATA}/jackett:/config/Jackett"
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.jackett.rule: "Host(`jackett.${DOMAIN}`)"
+        traefik.http.routers.jackett.entrypoints: "web"
+        traefik.http.routers.jackett.middlewares: "redirect@file"
+        traefik.http.routers.jackett-secured.rule: "Host(`jackett.${DOMAIN}`)"
+        traefik.http.routers.jackett-secured.entrypoints: "websecure"
+        traefik.http.routers.jackett-secured.tls: "true"
+        traefik.http.routers.jackett-secured.tls.options: "securetls@file"
+        traefik.http.routers.jackett-secured.tls.certresolver: "le"
+        traefik.http.routers.jackett-secured.middlewares: "secureHeaders@file,googleAuth@file"
+        traefik.http.services.jackett-secured.loadbalancer.server.port: "9117"
+    nzbhydra:
+      image: linuxserver/hydra2:latest
+      container_name: nzbhydra
+      environment:
+        PUID: "${PUID}"
+        PGID: "${PGID}"
+      volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - "${APPDATA}/nzbhydra:/config"
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.nzbhydra.rule: "Host(`nzbhydra.${DOMAIN}`)"
+        traefik.http.routers.nzbhydra.entrypoints: "web"
+        traefik.http.routers.nzbhydra.middlewares: "redirect@file"
+        traefik.http.routers.nzbhydra-secured.rule: "Host(`nzbhydra.${DOMAIN}`)"
+        traefik.http.routers.nzbhydra-secured.entrypoints: "websecure"
+        traefik.http.routers.nzbhydra-secured.tls: "true"
+        traefik.http.routers.nzbhydra-secured.tls.options: "securetls@file"
+        traefik.http.routers.nzbhydra-secured.tls.certresolver: "le"
+        traefik.http.routers.nzbhydra-secured.middlewares: "secureHeaders@file,googleAuth@file"
+        traefik.http.services.nzbhydra-secured.loadbalancer.server.port: "5076"
+networks:
+  default:
+    external:
+      name: web
