@@ -1,0 +1,22 @@
+version: "3"
+services:
+    plex:
+      image: 	plexinc/pms-docker:latest
+      container_name: plex
+      environment:
+        PUID: "${PUID}"
+        PGID: "${PGID}"
+        PLEX_UID: "${PUID}"
+        PLEX_CLAIM: "${PLEX_CLAIM}"
+      ports:
+        - 32400:32400
+      volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - "${APPDATA}/plex/database:/config"
+        - "${MNT_HDD}:${MNT_HDD}"
+        - /dev/shm:/ram_transcode
+      restart: always
+networks:
+  default:
+    external:
+      name: plex
