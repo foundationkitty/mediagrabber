@@ -21,6 +21,7 @@ services:
         traefik.http.routers.jackett-secured.tls.certresolver: "le"
         traefik.http.routers.jackett-secured.middlewares: "secureHeaders@file,googleAuth@file"
         traefik.http.services.jackett-secured.loadbalancer.server.port: "9117"
+      restart: always
     nzbhydra:
       image: linuxserver/hydra2:latest
       container_name: nzbhydra
@@ -42,6 +43,7 @@ services:
         traefik.http.routers.nzbhydra-secured.tls.certresolver: "le"
         traefik.http.routers.nzbhydra-secured.middlewares: "secureHeaders@file,googleAuth@file"
         traefik.http.services.nzbhydra-secured.loadbalancer.server.port: "5076"
+      restart: always
 networks:
   default:
     external:
