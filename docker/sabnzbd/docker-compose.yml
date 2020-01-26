@@ -22,6 +22,7 @@ services:
         traefik.http.routers.sabnzbd-secured.tls.certresolver: "le"
         traefik.http.routers.sabnzbd-secured.middlewares: "secureHeaders@file,googleAuth@file"
         traefik.http.services.sabnzbd-secured.loadbalancer.server.port: "8080"
+      restart: always
 networks:
   default:
     external:
