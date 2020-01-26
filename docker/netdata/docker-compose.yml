@@ -1,0 +1,34 @@
+version: "3"
+services:
+     netdata:
+        image: netdata/netdata:latest
+        container_name: netdata
+        environment:
+          PUID: "${PUID}"
+          PGID: "${PGID}"
+        volumes:
+          - /etc/localtime:/etc/localtime:ro
+          - /proc:/host/proc:ro \
+          - /sys:/host/sys:ro \
+          - /var/run/docker.sock:/var/run/docker.sock:ro
+       labels:
+         traefik.enable: "true"
+         traefik.http.routers.netdata.rule: "Host(`netdata.${DOMAIN}`)"
+         traefik.http.routers.netdata.entrypoints: "web"
+         traefik.http.routers.netdata.middlewares: "redirect@file"
+         traefik.http.routers.netdata-secured.rule: "Host(`netdata.${DOMAIN}`)"
+         traefik.http.routers.netdata-secured.entrypoints: "websecure"
+         traefik.http.routers.netdata-secured.tls: "true"
+         traefik.http.routers.netdata-secured.tls.options: "securetls@file"
+         traefik.http.routers.netdata-secured.tls.certresolver: "le"
+         traefik.http.routers.netdata-secured.middlewares: "secureHeaders@file,googleAuth@file"
+         traefik.http.services.netdata-secured.loadbalancer.server.port: "19999"
+       restart: always
+       cap_add:
+         - SYS_PTRACE
+       security_opt:
+         - apparmor:unconfined
+networks:
+  default:
+    external:
+      name: web
