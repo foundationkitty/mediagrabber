@@ -24,6 +24,7 @@ services:
         traefik.http.routers.deluge-secured.tls.certresolver: "le"
         traefik.http.routers.deluge-secured.middlewares: "secureHeaders@file,googleAuth@file"
         traefik.http.services.deluge-secured.loadbalancer.server.port: "8112"
+      restart: always
 networks:
   default:
     external:
