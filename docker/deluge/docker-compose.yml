@@ -1,0 +1,30 @@
+version: "3"
+services:
+    deluge:
+      image: linuxserver/deluge:latest
+      container_name: deluge
+      environment:
+        PUID: "${PUID}"
+        PGID: "${PGID}"
+      ports:
+        - "${TORRENT_PORT}:${TORRENT_PORT}"
+      volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - "${APPDATA}/deluge:/config"
+        - "${MNT_HDD}:${MNT_HDD}"
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.deluge.rule: "Host(`deluge.${DOMAIN}`)"
+        traefik.http.routers.deluge.entrypoints: "web"
+        traefik.http.routers.deluge.middlewares: "redirect@file"
+        traefik.http.routers.deluge-secured.rule: "Host(`deluge.${DOMAIN}`)"
+        traefik.http.routers.deluge-secured.entrypoints: "websecure"
+        traefik.http.routers.deluge-secured.tls: "true"
+        traefik.http.routers.deluge-secured.tls.options: "securetls@file"
+        traefik.http.routers.deluge-secured.tls.certresolver: "le"
+        traefik.http.routers.deluge-secured.middlewares: "secureHeaders@file,googleAuth@file"
+        traefik.http.services.deluge-secured.loadbalancer.server.port: "8112"
+networks:
+  default:
+    external:
+      name: web
