@@ -1,0 +1,54 @@
+version: "3"
+services:
+    sonarr:
+      image: 	foundationkitty/sonarr:latest
+      container_name: sonarr
+      environment:
+        PUID: "${PUID}"
+        PGID: "${PGID}"
+      volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - "${APPDATA}/sonarr:/config"
+        - "${APPDATA}/sonarr/mp4_automator:/sickbeard_mp4_automator"
+        - "${MNT_HDD}:${MNT_HDD}"
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.sonarr.rule: "Host(`sonarr.${DOMAIN}`)"
+        traefik.http.routers.sonarr.entrypoints: "web"
+        traefik.http.routers.sonarr.middlewares: "redirect@file"
+        traefik.http.routers.sonarr-secured.rule: "Host(`sonarr.${DOMAIN}`)"
+        traefik.http.routers.sonarr-secured.entrypoints: "websecure"
+        traefik.http.routers.sonarr-secured.tls: "true"
+        traefik.http.routers.sonarr-secured.tls.options: "securetls@file"
+        traefik.http.routers.sonarr-secured.tls.certresolver: "le"
+        traefik.http.routers.sonarr-secured.middlewares: "secureHeaders@file,googleAuth@file"
+        traefik.http.services.sonarr-secured.loadbalancer.server.port: "8989"
+      restart: always
+    radarr:
+      image: 	foundationkitty/radarr:latest
+      container_name: radarr
+      environment:
+        PUID: "${PUID}"
+        PGID: "${PGID}"
+      volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - "${APPDATA}/radarr:/config"
+        - "${APPDATA}/radarr/mp4_automator:/sickbeard_mp4_automator"
+        - "${MNT_HDD}:${MNT_HDD}"
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.radarr.rule: "Host(`radarr.${DOMAIN}`)"
+        traefik.http.routers.radarr.entrypoints: "web"
+        traefik.http.routers.radarr.middlewares: "redirect@file"
+        traefik.http.routers.radarr-secured.rule: "Host(`radarr.${DOMAIN}`)"
+        traefik.http.routers.radarr-secured.entrypoints: "websecure"
+        traefik.http.routers.radarr-secured.tls: "true"
+        traefik.http.routers.radarr-secured.tls.options: "securetls@file"
+        traefik.http.routers.radarr-secured.tls.certresolver: "le"
+        traefik.http.routers.radarr-secured.middlewares: "secureHeaders@file,googleAuth@file"
+        traefik.http.services.radarr-secured.loadbalancer.server.port: "8989"
+      restart: always
+networks:
+  default:
+    external:
+      name: web
