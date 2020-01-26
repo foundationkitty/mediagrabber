@@ -1,7 +1,7 @@
 version: "3"
 services:
     deezloader:
-      image: 	bocki/deezloaderrmx:latest
+      image: bocki/deezloaderrmx:latest
       container_name: deezloader
       environment:
         PUID: "${PUID}"
