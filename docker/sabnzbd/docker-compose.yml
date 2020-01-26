@@ -1,0 +1,28 @@
+version: "3"
+services:
+    sabnzbd:
+      image: linuxserver/sabnzbd:latest
+      container_name: sabnzbd
+      environment:
+        PUID: "${PUID}"
+        PGID: "${PGID}"
+      volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - "${APPDATA}/sabnzbd:/config"
+        - "${MNT_HDD}:${MNT_HDD}"
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.sabnzbd.rule: "Host(`sabnzbd.${DOMAIN}`)"
+        traefik.http.routers.sabnzbd.entrypoints: "web"
+        traefik.http.routers.sabnzbd.middlewares: "redirect@file"
+        traefik.http.routers.sabnzbd-secured.rule: "Host(`sabnzbd.${DOMAIN}`)"
+        traefik.http.routers.sabnzbd-secured.entrypoints: "websecure"
+        traefik.http.routers.sabnzbd-secured.tls: "true"
+        traefik.http.routers.sabnzbd-secured.tls.options: "securetls@file"
+        traefik.http.routers.sabnzbd-secured.tls.certresolver: "le"
+        traefik.http.routers.sabnzbd-secured.middlewares: "secureHeaders@file,googleAuth@file"
+        traefik.http.services.sabnzbd-secured.loadbalancer.server.port: "8080"
+networks:
+  default:
+    external:
+      name: web
