@@ -1,0 +1,103 @@
+version: "3"
+services:
+    traefik:
+        image: traefik:v2.1
+        container_name: traefik
+        environment:
+          PUID: "${PUID}"
+          PGID: "${PGID}"
+          CF_API_EMAIL: "${CF_EMAIL}"
+          CF_API_KEY: "${CF_API_KEY}"
+        ports:
+          - "80:80"
+          - "443:443"
+        volumes:
+          - /etc/localtime:/etc/localtime:ro
+          - /var/run/docker.sock:/var/run/docker.sock
+          - "${APPDATA}/traefik/:/etc/traefik/"
+        labels:
+          traefik.enable: "true"
+          traefik.http.routers.traefik.rule: "Host(`traefik.${DOMAIN}`)"
+          traefik.http.routers.traefik.entrypoints: "web"
+          traefik.http.routers.traefik.middlewares: "redirect@file"
+          traefik.http.routers.traefik-secured.rule: "Host(`traefik.${DOMAIN}`)"
+          traefik.http.routers.traefik-secured.entrypoints: "websecure"
+          traefik.http.routers.traefik-secured.tls: "true"
+          traefik.http.routers.traefik-secured.tls.options: "securetls@file"
+          traefik.http.routers.traefik-secured.tls.certresolver: "le"
+          traefik.http.routers.traefik-secured.middlewares: "secureHeaders@file,googleAuth@file"
+          traefik.http.routers.traefik-secured.service: "api@internal"
+          traefik.http.services.traefik-secured.loadbalancer.server.port: "8080"
+        restart: always
+        command:
+          - "--global.sendanonymoususage=false"
+          - "--providers.file.directory=/etc/traefik"
+          - "--providers.docker=true"
+          - "--providers.docker.exposedbydefault=false"
+          - "--api=true"
+          - "--log.level=DEBUG"
+          - "--accesslog=true"
+          - "--accesslog.filePath=/etc/traefik/access.log"
+          - "--accesslog.format=json"
+          - "--entrypoints.web.address=:80"
+          - "--entrypoints.websecure.address=:443"
+          - "--certificatesresolvers.le.acme.dnschallenge=true"
+          - "--certificatesresolvers.le.acme.dnschallenge.provider=cloudflare"
+          - "--certificatesresolvers.le.acme.email=${ACME_EMAIL}"
+          - "--certificatesresolvers.le.acme.storage=/etc/traefik/acme.json"
+          - "--certificatesResolvers.le.acme.dnsChallenge.resolvers=${NnAMESERVER_1},${NAMESERVER_2}"
+    oauth:
+        image: thomseddon/traefik-forward-auth:latest
+        container_name: oauth
+        environment:
+          PUID: "${PUID}"
+          PGID: "${PGID}"
+          AUTH_HOST: "oauth.${DOMAIN}"
+          COOKIE_DOMAIN: "${DOMAIN}"
+          SECRET: "${OAUTH_SECRET}"
+          INSECURE_COOKIE: "false"
+          CLIENT_ID: "${OAUTH_CLIENT_ID}"
+          CLIENT_SECRET: "${OAUTH_CLIENT_SECRET}"
+          WHITELIST: "${OAUTH_WHITELIST}"
+        volumes:
+          - /etc/localtime:/etc/localtime:ro
+        labels:
+          traefik.enable: "true"
+          traefik.http.routers.oauth.rule: "Host(`oauth.${DOMAIN}`)"
+          traefik.http.routers.oauth.entrypoints: "web"
+          traefik.http.routers.oauth.middlewares: "redirect@file"
+          traefik.http.routers.oauth-secured.rule: "Host(`oauth.${DOMAIN}`)"
+          traefik.http.routers.oauth-secured.entrypoints: "websecure"
+          traefik.http.routers.oauth-secured.tls: "true"
+          traefik.http.routers.oauth-secured.tls.options: "securetls@file"
+          traefik.http.routers.oauth-secured.tls.certresolver: "le"
+          traefik.http.routers.oauth-secured.middlewares: "secureHeaders@file,googleAuth@file"
+          traefik.http.services.oauth-secured.loadbalancer.server.port: "4181"
+        restart: always
+    portainer:
+        image: portainer/portainer:latest
+        container_name: portainer
+        environment:
+          PUID: "${PUID}"
+          PGID: "${PGID}"
+        volumes:
+          - /etc/localtime:/etc/localtime:ro
+          - /var/run/docker.sock:/var/run/docker.sock
+          -  "${APPDATA}/portainer:/data"
+        labels:
+          traefik.enable: "true"
+          traefik.http.routers.portainer.rule: "Host(`portainer.${DOMAIN}`)"
+          traefik.http.routers.portainer.entrypoints: "web"
+          traefik.http.routers.portainer.middlewares: "redirect@file"
+          traefik.http.routers.portainer-secured.rule: "Host(`portainer.${DOMAIN}`)"
+          traefik.http.routers.portainer-secured.entrypoints: "websecure"
+          traefik.http.routers.portainer-secured.tls: "true"
+          traefik.http.routers.portainer-secured.tls.options: "securetls@file"
+          traefik.http.routers.portainer-secured.tls.certresolver: "le"
+          traefik.http.routers.portainer-secured.middlewares: "secureHeaders@file,googleAuth@file"
+          traefik.http.services.portainer-secured.loadbalancer.server.port: "9000"
+        restart: always
+networks:
+  default:
+    external:
+      name: web
