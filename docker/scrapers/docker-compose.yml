@@ -11,6 +11,7 @@ services:
         - "${APPDATA}/sonarr:/config"
         - "${APPDATA}/sonarr/mp4_automator:/sickbeard_mp4_automator"
         - "${MNT_HDD}:${MNT_HDD}"
+        - "${MNT_UNIONFS}:${MNT_UNIONFS}"
       labels:
         traefik.enable: "true"
         traefik.http.routers.sonarr.rule: "Host(`sonarr.${DOMAIN}`)"
@@ -35,6 +36,7 @@ services:
         - "${APPDATA}/radarr:/config"
         - "${APPDATA}/radarr/mp4_automator:/sickbeard_mp4_automator"
         - "${MNT_HDD}:${MNT_HDD}"
+        - "${MNT_UNIONFS}:${MNT_UNIONFS}"
       labels:
         traefik.enable: "true"
         traefik.http.routers.radarr.rule: "Host(`radarr.${DOMAIN}`)"
