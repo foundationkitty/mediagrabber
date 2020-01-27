@@ -54,11 +54,11 @@ services:
           PGID: "${PGID}"
           AUTH_HOST: "oauth.${DOMAIN}"
           COOKIE_DOMAIN: "${DOMAIN}"
-          SECRET: "${OAUTH_SECRET}"
+          SECRET: "${LOGIN_OAUTH_SECRET}"
           INSECURE_COOKIE: "false"
-          CLIENT_ID: "${OAUTH_CLIENT_ID}"
-          CLIENT_SECRET: "${OAUTH_CLIENT_SECRET}"
-          WHITELIST: "${OAUTH_WHITELIST}"
+          CLIENT_ID: "${LOGIN_OAUTH_CLIENT_ID}"
+          CLIENT_SECRET: "${LOGIN_OAUTH_CLIENT_SECRET}"
+          WHITELIST: "${LOGIN_OAUTH_WHITELIST}"
         volumes:
           - /etc/localtime:/etc/localtime:ro
         labels:
