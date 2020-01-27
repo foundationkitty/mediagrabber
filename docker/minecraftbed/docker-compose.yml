@@ -1,7 +1,7 @@
 version: "3"
 services:
     minecraftbed:
-      image: 	bulzipke/minecraft:latest
+      image: bulzipke/minecraft:latest
       container_name: minecraftbed
       environment:
         PUID: "${PUID}"
