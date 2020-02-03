@@ -14,6 +14,7 @@ services:
         - /etc/localtime:/etc/localtime:ro
         - "${APPDATA}/plex/database:/config"
         - "${MNT_HDD}:${MNT_HDD}"
+        - "${MNT_MEDIA}:${MNT_MEDIA}"
         - /dev/shm:/ram_transcode
       restart: always
 networks:
