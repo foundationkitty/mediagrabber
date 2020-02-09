@@ -1,7 +1,7 @@
 version: "3"
 services:
     sonarr:
-      image: mdhiggins/sonarr-sma:latest
+      image: notorius28/sonarr3mp4converter:latest
       container_name: sonarr
       environment:
         PUID: "${PUID}"
@@ -49,6 +49,30 @@ services:
         traefik.http.routers.radarr-secured.tls.certresolver: "le"
         traefik.http.routers.radarr-secured.middlewares: "secureHeaders@file,googleAuth@file"
         traefik.http.services.radarr-secured.loadbalancer.server.port: "7878"
+      restart: always
+    radarr:
+      image: linuxserver/bazarr:latest
+      container_name: bazarr
+      environment:
+        PUID: "${PUID}"
+        PGID: "${PGID}"
+      volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - "${APPDATA}/bazarr:/config"
+        - "${MNT_HDD}:${MNT_HDD}"
+        - "${MNT_UNIONFS}:${MNT_UNIONFS}"
+      labels:
+        traefik.enable: "true"
+        traefik.http.routers.bazarr.rule: "Host(`bazarr.${DOMAIN}`)"
+        traefik.http.routers.bazarr.entrypoints: "web"
+        traefik.http.routers.bazarr.middlewares: "redirect@file"
+        traefik.http.routers.bazarr-secured.rule: "Host(`bazarr.${DOMAIN}`)"
+        traefik.http.routers.bazarr-secured.entrypoints: "websecure"
+        traefik.http.routers.bazarr-secured.tls: "true"
+        traefik.http.routers.bazarr-secured.tls.options: "securetls@file"
+        traefik.http.routers.bazarr-secured.tls.certresolver: "le"
+        traefik.http.routers.bazarr-secured.middlewares: "secureHeaders@file,googleAuth@file"
+        traefik.http.services.bazarr-secured.loadbalancer.server.port: "6767"
       restart: always
 networks:
   default:
