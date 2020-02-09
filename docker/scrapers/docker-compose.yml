@@ -50,7 +50,7 @@ services:
         traefik.http.routers.radarr-secured.middlewares: "secureHeaders@file,googleAuth@file"
         traefik.http.services.radarr-secured.loadbalancer.server.port: "7878"
       restart: always
-    radarr:
+    bazarr:
       image: linuxserver/bazarr:latest
       container_name: bazarr
       environment:
