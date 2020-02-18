@@ -7,7 +7,7 @@ services:
         PUID: "${PUID}"
         PGID: "${PGID}"
       ports:
-        - "${MINECRAFTBED_PORT}:${MINECRAFTBED_PORT}"
+        - "${MINECRAFTBED_PORT}:${MINECRAFTBED_PORT}/udp"
       volumes:
         - /etc/localtime:/etc/localtime:ro
         - "${APPDATA}/minecraftbed:/data"
